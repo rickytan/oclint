@@ -7,7 +7,7 @@
 #include <clang/Tooling/Tooling.h>
 
 #include "oclint/RuleBase.h"
-#include "rules/basic/GotoStatementRule.cpp"
+#include "rules/style/CompoundStatementStyleRule.cpp"
 
 using namespace std;
 using namespace clang;
@@ -53,6 +53,15 @@ public:
     }
 };
 
+/*
+static void dump_stmt(Stmt *stmt) {
+    string dump;
+    llvm::raw_string_ostream ss(dump);
+    stmt->printPretty(ss, nullptr, PrintingPolicy(LangOptions()));
+    ss.flush();
+    cout << dump << endl;
+}
+ */
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -68,11 +77,10 @@ int main(int argc, char *argv[]) {
         string code(buffer.str());
         
         ViolationSet violationSet;
-        if (!tooling::runToolOnCodeWithArgs(new TestFrontendAction(new GotoStatementRule(), &violationSet),
+        if (!tooling::runToolOnCodeWithArgs(new TestFrontendAction(new CompoundStatementStyleRule(), &violationSet),
                                            llvm::Twine(code), {"-c", "-fsyntax-only"}, filepath)) {
-            for (int i = 0; i < violationSet.numberOfViolations(); ++i) {
-                Violation v = violationSet.getViolations()[i];
-                cout << v.message << endl;
+            for (auto v : violationSet.getViolations()) {
+                cout << v.path << ":" << v.startLine << ":" << v.startColumn << ": " << v.message << endl;
             }
         }
     }
