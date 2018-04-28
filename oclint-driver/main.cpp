@@ -151,7 +151,7 @@ static int sendAnalyticsAndExit(int exitCode)
   return exitCode;
 }
 
-static void oclintVersionPrinter()
+static void oclintVersionPrinter(llvm::raw_ostream &)
 {
     outs() << "OCLint (http://oclint.org/):\n";
     outs() << "  OCLint version " << oclint::Version::identifier() << ".\n";
@@ -205,7 +205,7 @@ int main(int argc, const char **argv)
         return sendAnalyticsAndExit(ERROR_WHILE_PROCESSING);
     }
 
-    std::unique_ptr<oclint::Results> results(std::move(getResults()));
+    std::unique_ptr<oclint::Results> results(getResults());
 
     try
     {
