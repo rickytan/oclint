@@ -22,29 +22,28 @@ public:
         return "style";
     }
     
-    bool VisitCompoundStmt(Stmt *stmt) {
-        auto start = stmt->getLocStart();
-        auto end = stmt->getLocEnd();
-        
+    bool VisitCompoundStmt(CompoundStmt *stmt) {
+        auto start = stmt->getLBracLoc();
+        auto end = stmt->getRBracLoc();
         clang::SourceManager *sourceManager = &_carrier->getSourceManager();
         
         auto prestart = start.getLocWithOffset(-1);
-        if (prestart.isValid()) {
+        if (prestart.isValid() && sourceManager->getFileID(prestart) == sourceManager->getFileID(start)) {
             const char *code = sourceManager->getCharacterData(prestart);
-            if (!(code[0] == '\n' ||
-                  code[0] == '\t' ||
-                  code[0] == ' ' ||
-                  code[0] == '(')) {
+            if (code && !(code[0] == '\n' ||
+                          code[0] == '\t' ||
+                          code[0] == ' '  ||
+                          code[0] == '(')) {
                 addViolation(stmt, this, "左大括号前需要空格或回车");
             }
         }
         auto postend = end.getLocWithOffset(1);
-        if (postend.isValid()) {
+        if (postend.isValid() && sourceManager->getFileID(postend) == sourceManager->getFileID(end)) {
             const char *code = sourceManager->getCharacterData(postend);
-            if (!(code[0] == '\n' ||
-                  code[0] == '\t' ||
-                  code[0] == ' ' ||
-                  code[0] == ')')) {
+            if (code && !(code[0] == '\n' ||
+                          code[0] == '\t' ||
+                          code[0] == ' '  ||
+                          code[0] == ')')) {
                 addViolation(end, postend, this, "右大括号后需要空格或回车");
             }
         }
