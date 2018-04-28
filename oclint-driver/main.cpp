@@ -151,7 +151,7 @@ static int sendAnalyticsAndExit(int exitCode)
   return exitCode;
 }
 
-static void oclintVersionPrinter(llvm::raw_ostream &)
+static void oclintVersionPrinter()
 {
     outs() << "OCLint (http://oclint.org/):\n";
     outs() << "  OCLint version " << oclint::Version::identifier() << ".\n";
