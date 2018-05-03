@@ -58,6 +58,14 @@ public:
      });
      @endcode
      
+     字典字面量最后一个值是 Block 时，后面允许为 '}'，如：
+     @code
+     NSDictionary *dic = @{@"Foo": @YES,
+                           @"Bar": ^(NSString *result) {
+                                NSLog(@"%@", result);
+                           }};
+     @endcode
+     
      @warning 这里只将所有允许的情况列出来，并不做真实类型检查，即并不关心是 If 语句的代码，
               还是方法实现体的代码，等。
      */
@@ -77,7 +85,7 @@ public:
         auto postend = end.getLocWithOffset(1);
         if (postend.isValid() && sourceManager->getFileID(postend) == sourceManager->getFileID(end)) {
             const char *code = sourceManager->getCharacterData(postend);
-            if (code && string("\n\t )];,").find(code[0]) == string::npos) {
+            if (code && string("\n\t )];,}").find(code[0]) == string::npos) {
                 addViolation(end, postend, this, "右大括号后需要空格或回车");
             }
         }
