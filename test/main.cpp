@@ -8,7 +8,8 @@
 
 #include "oclint/RuleBase.h"
 //#include "rules/style/CompoundStatementStyleRule.cpp"
-#include "rules/style/ObjCMethodDeclStyleRule.cpp"
+//#include "rules/style/ObjCMethodDeclStyleRule.cpp"
+#include "rules/style/BinaryOperatorStyleRule.cpp"
 
 using namespace std;
 using namespace clang;
@@ -78,7 +79,7 @@ int main(int argc, char *argv[]) {
         string code(buffer.str());
         
         ViolationSet violationSet;
-        if (!tooling::runToolOnCodeWithArgs(new TestFrontendAction(new ObjCMethodDeclStyleRule(), &violationSet),
+        if (!tooling::runToolOnCodeWithArgs(new TestFrontendAction(new BinaryOperatorStyleRule(), &violationSet),
                                            llvm::Twine(code), {"-c", "-fsyntax-only"}, filepath)) {
             for (auto v : violationSet.getViolations()) {
                 cout << v.path << ":" << v.startLine << ":" << v.startColumn << ": " << v.message << endl;
