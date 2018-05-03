@@ -27,9 +27,20 @@ public:
     bool VisitObjCMethodDecl(ObjCMethodDecl *D) {
         SourceManager &sm = _carrier->getSourceManager();
         
-        auto start = D->getLocStart().getLocWithOffset(1);
-        if (start.isValid()) {
-            const char *code = sm.getCharacterData(start);
+        auto start = D->getLocStart();
+        // +/- 前面需要回车
+        auto pre = start.getLocWithOffset(-1);
+        if (pre.isValid()) {
+            const char *code = sm.getCharacterData(pre);
+            if (code && code[0] != '\n') {
+                addViolation(D, this, "方法声明 +/- 前需要回车");
+            }
+        }
+        
+        // +/- 后面需要空格
+        auto post = start.getLocWithOffset(1);
+        if (post.isValid()) {
+            const char *code = sm.getCharacterData(post);
             if (code && code[0] != ' ') {
                 addViolation(D, this, "方法声明 +/- 后需要空格");
             }
