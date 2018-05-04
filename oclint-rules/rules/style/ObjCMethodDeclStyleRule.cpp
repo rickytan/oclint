@@ -20,10 +20,6 @@ public:
         return "style";
     }
 
-    bool VisitObjCImplementationDecl(ObjCImplementationDecl *D) {
-        return true;
-    }
-
     bool VisitObjCMethodDecl(ObjCMethodDecl *D) {
         SourceManager &sm = _carrier->getSourceManager();
         
